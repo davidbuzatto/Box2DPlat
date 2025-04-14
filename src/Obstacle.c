@@ -14,6 +14,7 @@ void createObstacle( float x, float y, float w, float h, Color color, GameWorld 
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
     bodyDef.type = b2_staticBody;
+    bodyDef.userData = "obstacle";
     bodyDef.position = (b2Vec2){ x, y };
     o->bodyId = b2CreateBody( gw->worldId, &bodyDef );
 

@@ -26,7 +26,7 @@
 #include "box2d/box2d.h"
 
 b2Vec2 creationPoints[MAX_CHAIN_OBSTACLE_POINTS];
-int creationPointsQ;
+int creationPointsQ = 0;
 
 /**
  * @brief Creates a dinamically allocated GameWorld struct instance.
@@ -46,21 +46,14 @@ GameWorld* createGameWorld( void ) {
     gw->obstaclesQuantity = 0;
     gw->chainObstacleQuantity = 0;
 
-    createPlayer( &gw->player, GetScreenWidth() / 2, GetScreenHeight() / 2, 40, 40, BLUE, gw );
+    createPlayer( &gw->player, GetScreenWidth() / 2 - 150, GetScreenHeight() / 2, 40, 40, BLUE, gw );
 
     createObstacle( 10, GetScreenHeight() / 2, 20, GetScreenHeight() - 40, ORANGE, gw );
     createObstacle( GetScreenWidth() - 10, GetScreenHeight() / 2, 20, GetScreenHeight() - 40, ORANGE, gw );
     createObstacle( GetScreenWidth() / 2, 10, GetScreenWidth(), 20, ORANGE, gw );
     createObstacle( GetScreenWidth() / 2, GetScreenHeight() - 10, GetScreenWidth(), 20, ORANGE, gw );
 
-    // dummy chain obstacle
-    creationPointsQ = 0;
-    b2Vec2 pos[MAX_CHAIN_OBSTACLE_POINTS];
-    pos[0] = (b2Vec2) { 700, 300 };
-    pos[1] = (b2Vec2) { 700, 330 };
-    pos[2] = (b2Vec2) { 500, 330 };
-    pos[3] = (b2Vec2) { 500, 300 };
-    createChainObstacle( pos, 4, BLACK, gw );
+    createDummyObstcales( gw );
 
     return gw;
 
@@ -78,33 +71,12 @@ void destroyGameWorld( GameWorld *gw ) {
  */
 void updateGameWorld( GameWorld *gw, float delta ) {
 
+    updatePlayer( &gw->player );
+    handleChainObjectCreation( gw );
+
     int subStepCount = 4;
     b2World_Step( gw->worldId, delta, subStepCount );
-
-    updatePlayer( &gw->player );
-
-    if ( IsMouseButtonPressed( MOUSE_BUTTON_LEFT ) ) {
-        if ( creationPointsQ < MAX_CHAIN_OBSTACLE_POINTS ) {
-            int p = creationPointsQ;
-            creationPoints[p].x = GetMouseX();
-            creationPoints[p].y = GetMouseY();
-            creationPointsQ++;
-        }
-    }
-
-    if ( IsKeyPressed( KEY_ENTER ) ) {
-        if ( creationPointsQ > 3 && creationPointsQ < MAX_CHAIN_OBSTACLE_POINTS ) {
-            createChainObstacle( creationPoints, creationPointsQ, BLACK, gw );
-            /*for ( int i = 0; i < creationPointsQ; i++ ) {
-                TraceLog( LOG_INFO, "%.2f, %.2f", creationPoints[i].x, creationPoints[i].y );
-            }*/
-            creationPointsQ = 0;
-        }
-    }
-
-    if ( IsKeyPressed( KEY_ESCAPE ) ) {
-        creationPointsQ = 0;
-    }
+    handleContactEvents( gw );
 
 }
 
@@ -137,5 +109,89 @@ void drawGameWorld( GameWorld *gw ) {
     }
 
     EndDrawing();
+
+}
+
+void handleChainObjectCreation( GameWorld *gw ) {
+
+    if ( IsMouseButtonPressed( MOUSE_BUTTON_LEFT ) ) {
+        if ( creationPointsQ < MAX_CHAIN_OBSTACLE_POINTS ) {
+            int p = creationPointsQ;
+            creationPoints[p].x = GetMouseX();
+            creationPoints[p].y = GetMouseY();
+            creationPointsQ++;
+        }
+    }
+
+    if ( IsKeyPressed( KEY_ENTER ) ) {
+        if ( creationPointsQ > 3 && creationPointsQ < MAX_CHAIN_OBSTACLE_POINTS ) {
+            createChainObstacle( creationPoints, creationPointsQ, BLACK, gw );
+            for ( int i = 0; i < creationPointsQ; i++ ) {
+                TraceLog( LOG_INFO, "%.2f, %.2f", creationPoints[i].x, creationPoints[i].y );
+            }
+            creationPointsQ = 0;
+        }
+    }
+
+    if ( IsKeyPressed( KEY_ESCAPE ) ) {
+        creationPointsQ = 0;
+    }
+
+}
+
+void createDummyObstcales( GameWorld *gw ) {
+
+    b2Vec2 pos[MAX_CHAIN_OBSTACLE_POINTS];
+    
+    pos[0] = (b2Vec2) { 700, 300 };
+    pos[1] = (b2Vec2) { 700, 301 };
+    pos[2] = (b2Vec2) { 700, 350 };
+    pos[3] = (b2Vec2) { 400, 350 };
+    pos[4] = (b2Vec2) { 500, 300 };
+    createChainObstacle( pos, 5, BLACK, gw );
+
+    pos[0] = (b2Vec2) { 100, 350 };
+    pos[1] = (b2Vec2) { 99, 350 };
+    pos[2] = (b2Vec2) { 20, 350 };
+    pos[3] = (b2Vec2) { 20, 300 };
+    pos[4] = (b2Vec2) { 50, 300 };
+    createChainObstacle( pos, 5, BLACK, gw );
+
+}
+
+void handleContactEvents( GameWorld *gw ) {
+
+    b2ContactEvents events = b2World_GetContactEvents( gw->worldId );
+    
+    for ( int i = 0; i < events.beginCount; i++ ) {
+        const b2ContactBeginTouchEvent *event = &events.beginEvents[i];
+        handleContacBetweenShapes( event->shapeIdA, event->shapeIdB, RED );
+    }
+
+    for ( int i = 0; i < events.endCount; i++ ) {
+        const b2ContactEndTouchEvent *event = &events.endEvents[i];
+        handleContacBetweenShapes( event->shapeIdA, event->shapeIdB, GREEN );
+    }
+
+}
+
+void handleContacBetweenShapes( b2ShapeId sIdA, b2ShapeId sIdB, Color color ) {
+
+    b2BodyId bIdA = b2Shape_GetBody( sIdA );
+    b2BodyId bIdB = b2Shape_GetBody( sIdB );
+
+    char *userDataA = (char*) b2Body_GetUserData( bIdA );
+    char *userDataB = (char*) b2Body_GetUserData( bIdB );
+
+    ChainObstacle *co = NULL;
+    if ( userDataA[0] == 'c' ) {
+        co = (ChainObstacle*) b2Shape_GetUserData( sIdA );
+    } else if ( userDataB[0] == 'c' ) {
+        co = (ChainObstacle*) b2Shape_GetUserData( sIdB );
+    }
+
+    if ( co != NULL ) {
+        co->color = color;
+    }
 
 }

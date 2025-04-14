@@ -14,6 +14,7 @@ void createChainObstacle( b2Vec2 *points, int pointQuantity, Color color, GameWo
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
     bodyDef.type = b2_staticBody;
+    bodyDef.userData = "chain";
     co->bodyId = b2CreateBody( gw->worldId, &bodyDef );
 
     for ( int i = 0; i < pointQuantity; i++ ) {
@@ -28,6 +29,7 @@ void createChainObstacle( b2Vec2 *points, int pointQuantity, Color color, GameWo
     b2ChainDef chainDef = b2DefaultChainDef();
     chainDef.points = co->points;
     chainDef.count = co->pointQuantity;
+    chainDef.userData = co;
     
     co->chainId = b2CreateChain( co->bodyId, &chainDef );
 

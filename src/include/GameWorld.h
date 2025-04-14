@@ -7,6 +7,9 @@
  */
 #pragma once
 
+#include "raylib/raylib.h"
+#include "box2d/box2d.h"
+
 #include "Types.h"
 
 /**
@@ -28,3 +31,9 @@ void updateGameWorld( GameWorld *gw, float delta );
  * @brief Draws the state of the game.
  */
 void drawGameWorld( GameWorld *gw );
+
+void handleChainObjectCreation( GameWorld *gw );
+void createDummyObstcales( GameWorld *gw );
+
+void handleContactEvents( GameWorld *gw );
+void handleContacBetweenShapes( b2ShapeId sIdA, b2ShapeId sIdB, Color color );

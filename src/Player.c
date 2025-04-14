@@ -8,6 +8,7 @@ void createPlayer( Player *p, float x, float y, float w, float h, Color color, G
 
     b2BodyDef bodyDef = b2DefaultBodyDef();
     bodyDef.type = b2_dynamicBody;
+    bodyDef.userData = "player";
     bodyDef.position = (b2Vec2){ x, y };
     bodyDef.fixedRotation = true;
     p->bodyId = b2CreateBody( gw->worldId, &bodyDef );
@@ -32,13 +33,13 @@ void createPlayer( Player *p, float x, float y, float w, float h, Color color, G
 
 void updatePlayer( Player *p ) {
 
-    if ( IsKeyDown( KEY_RIGHT ) ) {
+    if ( IsKeyDown( KEY_RIGHT ) || IsKeyDown( KEY_D ) ) {
         if ( b2Body_GetLinearVelocity( p->bodyId ).x < p->maxWalkVelocity ) {
             b2Body_ApplyForceToCenter( p->bodyId, (b2Vec2){ p->walkImpulse, 0 }, true );
         }
     }
 
-    if ( IsKeyDown( KEY_LEFT ) ) {
+    if ( IsKeyDown( KEY_LEFT ) || IsKeyDown( KEY_A ) ) {
         if ( b2Body_GetLinearVelocity( p->bodyId ).x > -p->maxWalkVelocity ) {
             b2Body_ApplyForceToCenter( p->bodyId, (b2Vec2){ -p->walkImpulse, 0 }, true );
         }
