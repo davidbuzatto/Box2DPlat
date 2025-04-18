@@ -2,6 +2,7 @@
 
 #include "ChainObstacle.h"
 #include "Types.h"
+#include "utils.h"
 
 #include "raylib/raylib.h"
 #include "box2d/box2d.h"
@@ -39,7 +40,7 @@ void createChainObstacle( b2Vec2 *points, int pointQuantity, Color color, GameWo
 
 void drawChainObstacle( ChainObstacle *co ) {
 
-    for ( int i = 0; i < co->pointQuantity - 1; i++ ) {
+    /*for ( int i = 0; i < co->pointQuantity - 1; i++ ) {
         DrawLine( 
             co->points[i].x,
             co->points[i].y,
@@ -47,6 +48,9 @@ void drawChainObstacle( ChainObstacle *co ) {
             co->points[i+1].y,
             co->color
         );
-    }
+    }*/
+
+    drawShapeB2Vec2( co->points, co->pointQuantity, co->color, true );
+    drawShapeLinesB2Vec2( co->points, co->pointQuantity, BLACK );
 
 }
