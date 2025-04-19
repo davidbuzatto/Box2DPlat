@@ -1,7 +1,7 @@
 /**
- * @file utils.c
+ * @file DrawingUtils.c
  * @author Prof. Dr. David Buzatto
- * @brief Utilitary functions implementation.
+ * @brief Utilitary drawing functions implementation.
  * 
  * @copyright Copyright (c) 2025
  */

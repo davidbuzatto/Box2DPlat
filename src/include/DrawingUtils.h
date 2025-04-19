@@ -1,7 +1,7 @@
 /**
- * @file utils.h
+ * @file DrawingUtils.h
  * @author Prof. Dr. David Buzatto
- * @brief Utilitary function and constant declarations.
+ * @brief Utilitary drawing functions and constant declarations.
  * 
  * @copyright Copyright (c) 2025
  */
