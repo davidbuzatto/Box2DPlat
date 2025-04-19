@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdbool.h>
 #include "box2d/box2d.h"
 #include "raylib/raylib.h"
 
@@ -43,6 +44,7 @@ typedef struct ChainObstacle {
     int pointQuantity;
     
     Color color;
+    bool isConcave;
 
 } ChainObstacle;
 

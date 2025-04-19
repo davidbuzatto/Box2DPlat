@@ -108,6 +108,8 @@ void drawGameWorld( GameWorld *gw ) {
         );
     }
 
+    DrawFPS( 30, 30 );
+
     EndDrawing();
 
 }
@@ -125,7 +127,7 @@ void handleChainObjectCreation( GameWorld *gw ) {
 
     if ( IsKeyPressed( KEY_ENTER ) ) {
         if ( creationPointsQ > 3 && creationPointsQ < MAX_CHAIN_OBSTACLE_POINTS ) {
-            createChainObstacle( creationPoints, creationPointsQ, BLACK, gw );
+            createChainObstacle( creationPoints, creationPointsQ, BLACK, true, gw );
             for ( int i = 0; i < creationPointsQ; i++ ) {
                 TraceLog( LOG_INFO, "%.2f, %.2f", creationPoints[i].x, creationPoints[i].y );
             }
@@ -148,15 +150,28 @@ void createDummyObstcales( GameWorld *gw ) {
     pos[2] = (b2Vec2) { 700, 350 };
     pos[3] = (b2Vec2) { 400, 350 };
     pos[4] = (b2Vec2) { 500, 300 };
-    createChainObstacle( pos, 5, BLACK, gw );
+    createChainObstacle( pos, 5, ORANGE, false, gw );
 
     pos[0] = (b2Vec2) { 100, 350 };
     pos[1] = (b2Vec2) { 99, 350 };
     pos[2] = (b2Vec2) { 20, 350 };
     pos[3] = (b2Vec2) { 20, 300 };
     pos[4] = (b2Vec2) { 50, 300 };
-    createChainObstacle( pos, 5, BLACK, gw );
+    createChainObstacle( pos, 5, ORANGE, false, gw );
 
+    pos[0] = (b2Vec2) { 550, 80 };
+    pos[1] = (b2Vec2) { 550, 80 };
+    pos[2] = (b2Vec2) { 570, 160 };
+    pos[3] = (b2Vec2) { 650, 160 };
+    pos[4] = (b2Vec2) { 590, 210 };
+    pos[5] = (b2Vec2) { 610, 290 };
+    pos[6] = (b2Vec2) { 550, 240 };
+    pos[7] = (b2Vec2) { 490, 290 };
+    pos[8] = (b2Vec2) { 510, 210 };
+    pos[9] = (b2Vec2) { 450, 160 };
+    pos[10] = (b2Vec2) { 530, 160 };
+    createChainObstacle( pos, 11, ORANGE, true, gw );
+        
 }
 
 void handleContactEvents( GameWorld *gw ) {
@@ -165,12 +180,12 @@ void handleContactEvents( GameWorld *gw ) {
     
     for ( int i = 0; i < events.beginCount; i++ ) {
         const b2ContactBeginTouchEvent *event = &events.beginEvents[i];
-        handleContacBetweenShapes( event->shapeIdA, event->shapeIdB, RED );
+        handleContacBetweenShapes( event->shapeIdA, event->shapeIdB, GREEN );
     }
 
     for ( int i = 0; i < events.endCount; i++ ) {
         const b2ContactEndTouchEvent *event = &events.endEvents[i];
-        handleContacBetweenShapes( event->shapeIdA, event->shapeIdB, GREEN );
+        handleContacBetweenShapes( event->shapeIdA, event->shapeIdB, ORANGE );
     }
 
 }

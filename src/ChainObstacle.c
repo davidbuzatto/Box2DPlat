@@ -1,13 +1,14 @@
 #include <assert.h>
+#include <stdbool.h>
 
 #include "ChainObstacle.h"
 #include "Types.h"
-#include "utils.h"
+#include "DrawingUtils.h"
 
 #include "raylib/raylib.h"
 #include "box2d/box2d.h"
 
-void createChainObstacle( b2Vec2 *points, int pointQuantity, Color color, GameWorld *gw ) {
+void createChainObstacle( b2Vec2 *points, int pointQuantity, Color color, bool isConcave, GameWorld *gw ) {
 
     assert( gw->chainObstacleQuantity < MAX_CHAIN_OBSTACLES && pointQuantity < MAX_CHAIN_OBSTACLE_POINTS );
 
@@ -35,6 +36,7 @@ void createChainObstacle( b2Vec2 *points, int pointQuantity, Color color, GameWo
     co->chainId = b2CreateChain( co->bodyId, &chainDef );
 
     co->color = color;
+    co->isConcave = isConcave;
 
 }
 
@@ -50,7 +52,21 @@ void drawChainObstacle( ChainObstacle *co ) {
         );
     }*/
 
-    drawShapeB2Vec2( co->points, co->pointQuantity, co->color, true );
+    if ( co->isConcave ) {
+        drawConcaveShapeB2Vec2( co->points, co->pointQuantity, co->color, true );
+    } else {
+        drawShapeB2Vec2( co->points, co->pointQuantity, co->color, true );
+    }
+    
     drawShapeLinesB2Vec2( co->points, co->pointQuantity, BLACK );
+
+    for ( int i = 0; i < co->pointQuantity; i++ ) {
+        DrawText( 
+            TextFormat( "%.2f %.2f", co->points[i].x, co->points[i].y ), 
+            co->points[i].x, co->points[i].y,
+            10, 
+            DARKBLUE
+        );
+    }
 
 }
