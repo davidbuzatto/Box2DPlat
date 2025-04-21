@@ -18,7 +18,7 @@ void createPlayer( Player *p, float x, float y, float w, float h, Color color, G
 
     b2ShapeDef shapeDef = b2DefaultShapeDef();
     shapeDef.density = 1.0f;
-    shapeDef.friction = 0.05f;
+    shapeDef.material.friction = 0.05f;
 
     p->shapeId = b2CreatePolygonShape( p->bodyId, &shapeDef, &p->rect );
 
